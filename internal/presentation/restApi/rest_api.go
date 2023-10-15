@@ -3,6 +3,9 @@ package restApi
 import (
 	"errors"
 	"fmt"
+	"github.com/dhikaroofi/simple-rest-api/internal/presentation/restApi/common"
+	"github.com/dhikaroofi/simple-rest-api/internal/usecase"
+	validator2 "github.com/dhikaroofi/simple-rest-api/pkg/validator"
 	"log"
 	"net/http"
 
@@ -18,22 +21,38 @@ type Task interface {
 }
 
 type server struct {
-	app *fiber.App
+	app       *fiber.App
+	validator *validator2.ValidationEngine
+	useCase   *usecase.Container
+
+	appPort string
 }
 
-func NewFiberServer() Task {
-	app := fiber.New(fiber.Config{})
+func NewFiberServer(appPort string, container *usecase.Container) Task {
+	app := fiber.New(fiber.Config{
+		ErrorHandler: common.ErrResponse,
+	})
+
 	app.Use(helmet.New())
 	app.Use(logger.New())
 	app.Use(recover.New())
 
+	validatorEngine, err := validator2.NewEngine()
+	if err != nil {
+		log.Fatalf("failed to set up validator")
+	}
+
 	return &server{
-		app: app,
+		app:       app,
+		appPort:   appPort,
+		useCase:   container,
+		validator: validatorEngine,
 	}
 }
 
 func (s *server) Start() error {
-	if err := s.app.Listen(fmt.Sprintf(":%s", "1000")); err != nil {
+	s.route()
+	if err := s.app.Listen(fmt.Sprintf(":%s", s.appPort)); err != nil {
 		// ErrServerClosed is expected behaviour when exiting app
 		if !errors.Is(err, http.ErrServerClosed) {
 			return fmt.Errorf("server is closed caused by: %s", err.Error())

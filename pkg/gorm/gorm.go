@@ -22,7 +22,7 @@ func NewGorm(host, port, user, pass, db string) (*gorm.DB, *sql.DB, error) {
 			db,
 			"disable",      // ssl mode
 			"ASIA/JAKARTA", // timezone
-			"default",      // schema
+			"public",       // schema
 		),
 	}
 
@@ -52,6 +52,8 @@ func NewGorm(host, port, user, pass, db string) (*gorm.DB, *sql.DB, error) {
 	if err := sqlDB.Ping(); err != nil {
 		return nil, nil, fmt.Errorf("failed checking connection to database, err: %s", err.Error())
 	}
+
+	provider = provider.Debug()
 
 	return provider, sqlDB, nil
 }
