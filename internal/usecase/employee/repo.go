@@ -2,10 +2,9 @@ package employee
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
-
-	"database/sql"
 	"gorm.io/gorm"
 
 	"github.com/dhikaroofi/simple-rest-api/internal/common"
@@ -18,6 +17,7 @@ type EmployeeRepo interface {
 	Create(ctx context.Context, ent *Employee) (err error)
 	Update(ctx context.Context, id string, ent *Employee) (err error)
 	Delete(ctx context.Context, id string) (err error)
+	CheckIfExist(ctx context.Context, id string) (err error)
 }
 
 type employeeRepo struct {
@@ -33,7 +33,7 @@ func NewEmployeeRepo(dbClient *gorm.DB) EmployeeRepo {
 }
 
 func (r employeeRepo) GetList(ctx context.Context, commonQuery *common.QueryPagination) (result []Employee, err error) {
-	exec := r.dbClient.Table(r.table)
+	exec := r.dbClient.Table(r.table).Select("id,first_name,last_name,email,TO_CHAR(hire_date, 'YYYY-MM-DD') AS hire_date")
 
 	if commonQuery.SearchKeyword != "" {
 		exec = exec.Where("first_name LIKE '%@val%' OR last_name LIKE '%@val%' OR email LIKE '%@val%'", sql.Named("val", commonQuery.SearchKeyword))
@@ -55,7 +55,7 @@ func (r employeeRepo) GetList(ctx context.Context, commonQuery *common.QueryPagi
 }
 
 func (r employeeRepo) Get(ctx context.Context, id string) (result Employee, err error) {
-	exec := r.dbClient.Table(r.table).Where("id=?", id).First(&result)
+	exec := r.dbClient.Table(r.table).Select("id,first_name,last_name,email,TO_CHAR(hire_date, 'YYYY-MM-DD') AS hire_date").Where("id=?", id).First(&result)
 	if exec.Error != nil {
 		err = customError.ErrQuery(exec.Error)
 		if errors.Is(exec.Error, gorm.ErrRecordNotFound) {
@@ -106,6 +106,22 @@ func (r employeeRepo) Delete(ctx context.Context, id string) (err error) {
 
 	if exec.RowsAffected < 1 {
 		err = customError.ErrQuery(fmt.Errorf("failed to delete employee"))
+		return
+	}
+
+	return
+}
+
+func (r employeeRepo) CheckIfExist(ctx context.Context, id string) (err error) {
+	var total int64
+	exec := r.dbClient.Table(r.table).Where("id=?", id).Count(&total)
+	if exec.Error != nil {
+		err = customError.ErrQuery(exec.Error)
+		return
+	}
+
+	if total < 1 {
+		err = customError.ErrNotFound(r.table)
 		return
 	}
 

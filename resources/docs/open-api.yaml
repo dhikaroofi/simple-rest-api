@@ -1,0 +1,338 @@
+openapi: 3.0.0
+info:
+  title: Employee API
+  version: 1.0.0
+  description: | 
+     little bit explanation about the response structure, in this app, our response structure consists of five main parts: status, message, data, error, and errorField. 
+    'status' indicates the error status using a standard API format with a custom touch. 
+    'message' provides information that users can easily understand. 
+    'error' are meant for developers to help them pinpoint issues. 
+    'errorField' is especially helpful for users as it specifies which request field has an invalid format or is required.
+    'data' is the contain the data that the user need
+tags:
+  - name: employee
+    description: CRUD for employee
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /employee/list:
+    get:
+      tags:
+        - employee
+      summary: Get a list of employees
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: items_per_page
+          schema:
+            type: integer
+            default: 15
+          description: Items per page
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Search keyword
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            first_name:
+                              type: string
+                              example: "purnomo"
+                            last_name:
+                              type: string
+                              example: "bambang"
+                            email:
+                              type: string
+                              example: "roofi.dhika@gmail.com"
+                            hire_date:
+                              type: string
+                              format: date-time
+                              example: "2023-12-01"
+                      next_page:
+                        type: integer
+                        example: null
+                      prev_page:
+                        type: integer
+                        nullable: true
+                        example: null
+                      total_page:
+                        type: integer
+                        example: 1
+                      page:
+                        type: integer
+                        example: 1
+                      items_per_page:
+                        type: integer
+                        example: 10
+                      total_items:
+                        type: integer
+                        example: 1
+                      search_keyword:
+                        type: string
+                        example: ""
+        '500':
+          $ref: '#/components/responses/DefaultGeneralErrResponse'
+  /employee/create:
+    post:
+      tags:
+        - employee
+      summary: Create a new employee
+      requestBody:
+        description: "use employee data for the request. Note:
+        date format suppose to be Y-m-d"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  default: example@gmail.com
+                first_name:
+                  type: string
+                  default: bambang
+                hire_date:
+                  type: string
+                  format: date
+                  default: 2023-12-27
+                last_name:
+                  type: string
+                  default: bambang
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 7
+                      first_name:
+                        type: string
+                        example: "purnomo"
+                      last_name:
+                        type: string
+                        example: "bambang"
+                      email:
+                        type: string
+                        example: "roofi.dhika@gmail.com"
+                      hire_date:
+                        type: string
+                        example: "2023-12-01"
+        '400':
+          $ref: '#/components/responses/DefaultBadRequestErrResponse'
+        '500':
+          $ref: '#/components/responses/DefaultGeneralErrResponse'
+  /employee/update/{id}:
+    put:
+      tags:
+        - employee
+      summary: Update a employee data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the employee to remove
+      requestBody:
+        description: "use employee data for the request. Note:
+        date format suppose to be Y-m-d"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  default: example@gmail.com
+                first_name:
+                  type: string
+                  default: bambang
+                hire_date:
+                  type: string
+                  format: date
+                  default: 2023-12-27
+                last_name:
+                  type: string
+                  default: bambang
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 7
+                      first_name:
+                        type: string
+                        example: "purnomo"
+                      last_name:
+                        type: string
+                        example: "bambang"
+                      email:
+                        type: string
+                        example: "roofi.dhika@gmail.com"
+                      hire_date:
+                        type: string
+                        example: "2023-12-01"
+        '400':
+          $ref: '#/components/responses/DefaultBadRequestErrResponse'
+        '404':
+          $ref: '#/components/responses/DefaultNotFoundErrResponse'
+        '500':
+          $ref: '#/components/responses/DefaultGeneralErrResponse'
+  /employee/remove/{id}:
+    delete:
+      tags:
+        - employee
+      summary: Remove an employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the employee to remove
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    example: {}
+        '404':
+          $ref: '#/components/responses/DefaultNotFoundErrResponse'
+        '500':
+          $ref: '#/components/responses/DefaultGeneralErrResponse'
+components:
+  responses:
+    DefaultGeneralErrResponse:
+      description: "Response for query error or any unspecified error that caused by server. Note: 'error' properties will provide details about the error, and if we want it can also be hidden in responses."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 500
+              message:
+                type: string
+                example: "Oops! There's a hiccup on our server. Please wait a sec. 🛠️😅"
+              data:
+                type: object
+              error:
+                type: string
+                example: "query error: failed to connect to `host=localhost user=default database=gandiwa`: dial error (dial tcp 127.0.0.1:5432: connect: connection refused)"
+    DefaultBadRequestErrResponse:
+      description: "Error response if the request contains fields with an incorrect format. Note: 'errorField' properties will show which field has an invalid format or is required"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "Oopsie! Something's off with your data. Can you check it again? 😊"
+              data:
+                type: object
+              error:
+                type: string
+                example: "bad request"
+              errorField:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: "email must be a valid email address"
+                  hire_date:
+                    type: string
+                    example: "invalid date. The date should be in the format 'Y-M-D'"
+                  last_name:
+                    type: string
+                    example: "last_name can only contain alphabetic characters"
+    DefaultNotFoundErrResponse:
+      description: "Error response for data not found or an invalid ID format"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Oops!! The data you're looking for isn't here. 🤷‍🔍"
+              data:
+                type: object
+              error:
+                type: string
+                example: "data not found"

@@ -15,12 +15,13 @@ func (s *server) route() {
 		})
 	})
 
-	s.app.Get("/employee/list", s.getListEmployee)
-	s.app.Get("/employee/:id", s.getEmployee)
-	s.app.Put("/employee/:id", s.actUpdate)
-	s.app.Delete("/employee/remove/:id", s.actRemove)
-	s.app.Post("/employee/create", s.actCreate)
+	routeGroupV1 := s.app.Group("/api/v1")
 
+	routeGroupV1.Get("/employee/list", s.getListEmployee)
+	routeGroupV1.Get("/employee/:id", s.getEmployee)
+	routeGroupV1.Put("/employee/:id", s.actUpdate)
+	routeGroupV1.Delete("/employee/remove/:id", s.actRemove)
+	routeGroupV1.Post("/employee/create", s.actCreate)
 }
 
 func (s *server) getListEmployee(ctx *fiber.Ctx) error {

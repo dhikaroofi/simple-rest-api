@@ -14,7 +14,7 @@ func Init(appExitChan chan bool) {
 		server restApi.Task
 	)
 
-	conf = config.LoadConfigFromFile("resources/config.yaml")
+	conf = config.LoadConfigFromFile("resources/config/config.yaml")
 	cont = usecase.NewUseCase(conf)
 	server = restApi.NewFiberServer(conf.AppPort, cont)
 

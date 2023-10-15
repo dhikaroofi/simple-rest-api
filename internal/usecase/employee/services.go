@@ -62,6 +62,11 @@ func (s employeeServices) Create(ctx context.Context, req CreateOrUpdateEmployee
 
 func (s employeeServices) Update(ctx context.Context, id string, req CreateOrUpdateEmployeeReq) (resp EmployeeResp, err error) {
 	ent := req.ConvertReqToEntity()
+
+	if err = s.repo.CheckIfExist(ctx, id); err != nil {
+		return
+	}
+
 	if err = s.repo.Update(ctx, id, &ent); err != nil {
 		return
 	}
@@ -74,6 +79,10 @@ func (s employeeServices) Update(ctx context.Context, id string, req CreateOrUpd
 }
 
 func (s employeeServices) Delete(ctx context.Context, id string) (err error) {
+	if err = s.repo.CheckIfExist(ctx, id); err != nil {
+		return
+	}
+
 	if err = s.repo.Delete(ctx, id); err != nil {
 		return
 	}

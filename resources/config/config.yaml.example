@@ -1,0 +1,7 @@
+appPort: 8080
+db:
+  host: lokadb
+  port: 5432
+  user: default
+  pass: secret
+  database: gandiwa

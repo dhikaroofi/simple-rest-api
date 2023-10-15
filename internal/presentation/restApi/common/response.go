@@ -30,6 +30,13 @@ func ErrResponse(ctx *fiber.Ctx, err error) error {
 		Data:    struct{}{},
 	}
 
+	if val, ok := err.(*fiber.Error); ok {
+		resp.Status = val.Code
+		resp.Message = val.Message
+		resp.Error = val.Error()
+		return ctx.JSON(resp)
+	}
+
 	if val, ok := err.(*customError.CustomError); ok {
 		resp.Status = val.Code
 		resp.Message = val.Message
@@ -37,6 +44,7 @@ func ErrResponse(ctx *fiber.Ctx, err error) error {
 		if val.ErrField != nil {
 			resp.ErrField = val.ErrField
 		}
+		return ctx.JSON(resp)
 	}
 
 	return ctx.JSON(resp)
