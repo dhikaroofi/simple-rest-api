@@ -23,6 +23,8 @@ services:
     image: gandiwa
     restart: unless-stopped
     tty: true
+    ports:
+      - "8080:8080"
     depends_on:
       - lokadb
     volumes:
