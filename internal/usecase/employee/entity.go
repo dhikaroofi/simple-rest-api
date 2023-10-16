@@ -1,8 +1,9 @@
 package employee
 
 import (
-	"github.com/dhikaroofi/simple-rest-api/internal/common"
 	"strings"
+
+	"github.com/dhikaroofi/simple-rest-api/internal/common"
 )
 
 type Employee struct {
@@ -14,13 +15,13 @@ type Employee struct {
 }
 
 type CreateOrUpdateEmployeeReq struct {
-	FirstName string `json:"first_name" validate:"required,alpha"`
-	LastName  string `json:"last_name" validate:"required,alpha"`
-	Email     string `json:"email" validate:"required,email"`
+	FirstName string `json:"first_name" validate:"required,alpha,max=25"`
+	LastName  string `json:"last_name" validate:"required,alpha,max=25"`
+	Email     string `json:"email" validate:"required,email,max=75"`
 	HireDate  string `json:"hire_date" validate:"required,customDate"`
 }
 
-type EmployeeResp struct {
+type Resp struct {
 	Employee
 }
 

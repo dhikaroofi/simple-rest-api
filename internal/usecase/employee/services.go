@@ -2,36 +2,37 @@ package employee
 
 import (
 	"context"
-	"github.com/dhikaroofi/simple-rest-api/internal/common"
 	"gorm.io/gorm"
 	"strconv"
+
+	"github.com/dhikaroofi/simple-rest-api/internal/common"
 )
 
-type EmployeeServices interface {
-	Get(ctx context.Context, id string) (resp EmployeeResp, err error)
+type ServicesInterfaces interface {
+	Get(ctx context.Context, id string) (resp Resp, err error)
 	GetList(ctx context.Context, queryCommon *common.QueryPagination) (resp ListEmployeeResp, err error)
-	Create(ctx context.Context, req CreateOrUpdateEmployeeReq) (resp EmployeeResp, err error)
-	Update(ctx context.Context, id string, req CreateOrUpdateEmployeeReq) (resp EmployeeResp, err error)
+	Create(ctx context.Context, req CreateOrUpdateEmployeeReq) (resp Resp, err error)
+	Update(ctx context.Context, id string, req CreateOrUpdateEmployeeReq) (resp Resp, err error)
 	Delete(ctx context.Context, id string) (err error)
 }
 
 type employeeServices struct {
-	repo EmployeeRepo
+	repo RepoInterfaces
 }
 
-func NewEmployeeServices(dbClient *gorm.DB) EmployeeServices {
+func NewEmployeeServices(dbClient *gorm.DB) ServicesInterfaces {
 	return &employeeServices{
 		repo: NewEmployeeRepo(dbClient),
 	}
 }
 
-func (s employeeServices) Get(ctx context.Context, id string) (resp EmployeeResp, err error) {
+func (s employeeServices) Get(ctx context.Context, id string) (resp Resp, err error) {
 	result, err := s.repo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	resp = EmployeeResp{result}
+	resp = Resp{result}
 
 	return
 }
@@ -50,17 +51,17 @@ func (s employeeServices) GetList(ctx context.Context, queryCommon *common.Query
 	return
 }
 
-func (s employeeServices) Create(ctx context.Context, req CreateOrUpdateEmployeeReq) (resp EmployeeResp, err error) {
+func (s employeeServices) Create(ctx context.Context, req CreateOrUpdateEmployeeReq) (resp Resp, err error) {
 	ent := req.ConvertReqToEntity()
 	if err = s.repo.Create(ctx, &ent); err != nil {
 		return
 	}
 
-	resp = EmployeeResp{ent}
+	resp = Resp{ent}
 	return
 }
 
-func (s employeeServices) Update(ctx context.Context, id string, req CreateOrUpdateEmployeeReq) (resp EmployeeResp, err error) {
+func (s employeeServices) Update(ctx context.Context, id string, req CreateOrUpdateEmployeeReq) (resp Resp, err error) {
 	ent := req.ConvertReqToEntity()
 
 	if err = s.repo.CheckIfExist(ctx, id); err != nil {
@@ -74,7 +75,7 @@ func (s employeeServices) Update(ctx context.Context, id string, req CreateOrUpd
 	intID, _ := strconv.Atoi(id)
 	ent.ID = intID
 
-	resp = EmployeeResp{ent}
+	resp = Resp{ent}
 	return
 }
 

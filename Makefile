@@ -1,10 +1,7 @@
-.PHONY: build buildAndRunDockerApps migrate-up migrate-down
+.PHONY: build buildAndRunDockerApps migrate-up migrate-down test generate-mock
 
 include .env
 
-DB_URL :="postgres://default:secret@localhost:5432/gandiwa?sslmode=disable"
-
-# this command build is only can be run from linux
 build:
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o ./bin/gandiwa
 
@@ -18,5 +15,13 @@ migrate-up:
 
 migrate-down:
 	@migrate -path ./database/migrations -database $(DATABASE_URL) down
+
+test:
+	go fmt ./...
+	go test -coverprofile coverage.cov -cover ./...
+	go tool cover -func coverage.cov
+
+generate-mock:
+	mockery --all
 
 

@@ -2,18 +2,18 @@ package usecase
 
 import (
 	"database/sql"
-	gorm2 "github.com/dhikaroofi/simple-rest-api/pkg/gorm"
 	"gorm.io/gorm"
 	"log"
 
 	"github.com/dhikaroofi/simple-rest-api/internal/config"
 	"github.com/dhikaroofi/simple-rest-api/internal/usecase/employee"
+	gorm2 "github.com/dhikaroofi/simple-rest-api/pkg/gorm"
 )
 
 type Container struct {
 	dbClient *gorm.DB
 	sqlDB    *sql.DB
-	Employee employee.EmployeeServices
+	Employee employee.ServicesInterfaces
 }
 
 func NewUseCase(conf *config.Config) *Container {

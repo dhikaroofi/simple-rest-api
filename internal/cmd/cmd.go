@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/dhikaroofi/simple-rest-api/internal/config"
-	"github.com/dhikaroofi/simple-rest-api/internal/presentation/restApi"
+	restapi "github.com/dhikaroofi/simple-rest-api/internal/presentation/restApi"
 	"github.com/dhikaroofi/simple-rest-api/internal/usecase"
 	"log"
 )
@@ -11,12 +11,12 @@ func Init(appExitChan chan bool) {
 	var (
 		conf   *config.Config
 		cont   *usecase.Container
-		server restApi.Task
+		server *restapi.Server
 	)
 
 	conf = config.LoadConfigFromFile("resources/config/config.yaml")
 	cont = usecase.NewUseCase(conf)
-	server = restApi.NewFiberServer(conf.AppPort, cont)
+	server = restapi.NewFiberServer(conf.AppPort, cont)
 
 	go func() {
 		if err := server.Start(); err != nil {

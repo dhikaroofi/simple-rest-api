@@ -11,7 +11,7 @@ import (
 	"github.com/dhikaroofi/simple-rest-api/pkg/customError"
 )
 
-type EmployeeRepo interface {
+type RepoInterfaces interface {
 	Get(ctx context.Context, id string) (result Employee, err error)
 	GetList(ctx context.Context, commonQuery *common.QueryPagination) (result []Employee, err error)
 	Create(ctx context.Context, ent *Employee) (err error)
@@ -25,7 +25,7 @@ type employeeRepo struct {
 	table    string
 }
 
-func NewEmployeeRepo(dbClient *gorm.DB) EmployeeRepo {
+func NewEmployeeRepo(dbClient *gorm.DB) RepoInterfaces {
 	return &employeeRepo{
 		dbClient: dbClient,
 		table:    "employees",
